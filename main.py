@@ -4,21 +4,34 @@ import sys
 
 from os import getenv
 from dotenv import load_dotenv
-from aiogram import Bot, Dispatcher
+from aiogram import Bot, Dispatcher, html
 from aiogram.filters import Command
 from aiogram.types import Message
+from aiogram.enums import ParseMode
 
 
 load_dotenv()
 
 TOKEN = getenv("BOT_TOKEN")
+ADMIN = getenv("ADMIN")
+
 bot = Bot(TOKEN)
 dp = Dispatcher()
+pm = ParseMode.HTML
 
 
 @dp.message(Command(commands=["start"]))
 async def command_start_handler(message: Message) -> None:
     await message.answer(f"Hello, {message.from_user.username}!")
+
+
+@dp.message(Command(commands=["get_id"]))
+async def command_get_id_handler(message: Message) -> None:
+    await bot.send_message(
+        chat_id=ADMIN,
+        text=f"ID пользователя @{message.from_user.username}: {html.code(message.chat.id)}",
+        parse_mode=pm,
+    )
 
 
 @dp.message()
