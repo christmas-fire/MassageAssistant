@@ -6,8 +6,10 @@ from os import getenv
 from dotenv import load_dotenv
 from aiogram import Bot, Dispatcher, html
 from aiogram.filters import Command
-from aiogram.types import Message
+from aiogram.types import Message, CallbackQuery
 from aiogram.enums import ParseMode
+
+from Inline_handler import *
 
 
 load_dotenv()
@@ -22,7 +24,9 @@ pm = ParseMode.HTML
 
 @dp.message(Command(commands=["start"]))
 async def command_start_handler(message: Message) -> None:
-    await message.answer(f"Hello, {message.from_user.username}!")
+    await message.answer(
+        f"Hello, {message.from_user.username}!", reply_markup=inline_start()
+    )
 
 
 @dp.message(Command(commands=["get_id"]))
@@ -32,6 +36,13 @@ async def command_get_id_handler(message: Message) -> None:
         text=f"ID пользователя @{message.from_user.username}: {html.code(message.chat.id)}",
         parse_mode=pm,
     )
+
+
+@dp.callback_query()
+async def callback_start(callback_query: CallbackQuery):
+    if callback_query.data == "start":
+        await bot.send_message(callback_query.from_user.id, text="Бот запущен")
+        await callback_query.answer()
 
 
 @dp.message()
