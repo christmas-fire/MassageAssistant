@@ -10,6 +10,7 @@ from aiogram.types import Message, CallbackQuery
 from aiogram.enums import ParseMode
 
 from Inline_handler import *
+from Keyboard_handler import *
 
 
 load_dotenv()
@@ -25,14 +26,13 @@ pm = ParseMode.HTML
 @dp.message(Command(commands=["start"]))
 async def command_start_handler(message: Message) -> None:
     await message.answer(
-        f"Hello, {message.from_user.username}!", reply_markup=inline_start()
+        f"Hello, {message.from_user.username}!", reply_markup=keyboard_start()
     )
 
 
 @dp.message(Command(commands=["get_id"]))
 async def command_get_id_handler(message: Message) -> None:
-    await bot.send_message(
-        chat_id=ADMIN,
+    await message.answer(
         text=f"ID пользователя @{message.from_user.username}: {html.code(message.chat.id)}",
         parse_mode=pm,
     )
@@ -43,12 +43,6 @@ async def command_casino(message: Message) -> None:
     picture = types.FSInputFile("images/casino.jpg")
     text = "Испытай удачу!"
     await message.answer_photo(picture, text, reply_markup=inline_casino())
-
-
-@dp.callback_query(F.data == "start")
-async def callback_start(callback: CallbackQuery):
-    await bot.send_message(callback.from_user.id, text="Бот запущен")
-    await callback.answer()
 
 
 @dp.callback_query(F.data.startswith("casino_"))
