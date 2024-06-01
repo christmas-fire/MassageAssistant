@@ -9,6 +9,7 @@ from aiogram.filters import Command
 from aiogram.types import Message, CallbackQuery
 from aiogram.enums import ParseMode
 
+from Default_commands import *
 from Inline_handler import *
 from Keyboard_handler import *
 
@@ -69,6 +70,7 @@ async def echo_handler(message: Message) -> None:
 
 
 async def main() -> None:
+    await set_bot_commands(bot)
     await dp.start_polling(bot)
 
 
