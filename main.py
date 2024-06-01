@@ -13,11 +13,11 @@ from Default_commands import *
 from Inline_handler import *
 from Keyboard_handler import *
 
-
 load_dotenv()
 
 TOKEN = getenv("BOT_TOKEN")
 ADMIN = getenv("ADMIN")
+RAZVAL = getenv("RAZVAL")
 
 bot = Bot(TOKEN)
 dp = Dispatcher()
@@ -44,6 +44,11 @@ async def command_casino(message: Message) -> None:
     picture = types.FSInputFile("images/casino.jpg")
     text = "Испытай удачу!"
     await message.answer_photo(picture, text, reply_markup=inline_casino())
+    
+
+@dp.message(Command(commands=["razval"]))
+async def command_razval(message: Message) -> None:
+    await bot.send_message(chat_id=RAZVAL, text="Если заработает, я ахуею)\n\nР.S. Я пытаюсь отправить тебе сообщение напрямую через бота, зная твой id.\n\nЛюблю тебя, моя милая развал!")
 
 
 @dp.callback_query(F.data.startswith("casino_"))
