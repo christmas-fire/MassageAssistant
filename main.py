@@ -4,7 +4,7 @@ import sys
 
 from os import getenv
 from dotenv import load_dotenv
-from aiogram import Bot, Dispatcher, html
+from aiogram import Bot, Dispatcher, html, types, F
 from aiogram.filters import Command
 from aiogram.types import Message, CallbackQuery
 from aiogram.enums import ParseMode
@@ -38,11 +38,35 @@ async def command_get_id_handler(message: Message) -> None:
     )
 
 
-@dp.callback_query()
-async def callback_start(callback_query: CallbackQuery):
-    if callback_query.data == "start":
-        await bot.send_message(callback_query.from_user.id, text="Бот запущен")
-        await callback_query.answer()
+@dp.message(Command(commands=["casino"]))
+async def command_casino(message: Message) -> None:
+    picture = types.FSInputFile("images/casino.jpg")
+    text = "Испытай удачу!"
+    await message.answer_photo(picture, text, reply_markup=inline_casino())
+
+
+@dp.callback_query(F.data == "start")
+async def callback_start(callback: CallbackQuery):
+    await bot.send_message(callback.from_user.id, text="Бот запущен")
+    await callback.answer()
+
+
+@dp.callback_query(F.data.startswith("casino_"))
+async def callback_casino(callback: CallbackQuery):
+    action = callback.data.split("_")[1]
+
+    if action == "dice":
+        await callback.message.answer_dice(emoji="🎲")
+    elif action == "football":
+        await callback.message.answer_dice(emoji="⚽")
+    elif action == "darts":
+        await callback.message.answer_dice(emoji="🎯")
+    elif action == "backetball":
+        await callback.message.answer_dice(emoji="🏀")
+    elif action == "slots":
+        await callback.message.answer_dice(emoji="🎰")
+
+    await callback.answer()
 
 
 @dp.message()
